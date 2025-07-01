@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'docker:24.0.2-cli'  // lightweight official Docker CLI image
+            image 'docker:24.0.2-dind'  // Full Alpine + Docker daemon image
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
@@ -11,9 +11,14 @@ pipeline {
     }
 
     stages {
+        stage('Install Compose') {
+            steps {
+                sh 'apk add --no-cache docker-compose'
+            }
+        }
+
         stage('Build and Deploy') {
             steps {
-                sh 'apk add --no-cache docker-compose'  // install Compose in alpine container
                 sh 'docker-compose down || true'
                 sh 'docker-compose build'
                 sh 'docker-compose up -d'
@@ -23,7 +28,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker ps'
+            sh 'docker ps || true'
         }
     }
 }
