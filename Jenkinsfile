@@ -6,12 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git credentialsId: 'github-creds', url: 'git@github.com:your-user/your-repo.git', branch: 'main'
-            }
-        }
-
         stage('Build and Deploy') {
             steps {
                 sh 'docker-compose down || true'
